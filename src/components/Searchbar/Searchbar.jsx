@@ -1,23 +1,38 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { FaSearch } from 'react-icons/fa';
+import {
+  StyledForm,
+  StyledHeader,
+  StyledInput,
+  StyledSearchBtn,
+} from './Searchbar.styled';
 
-export default class Searchbar extends Component {
-  render() {
-    return (
-      <header class="searchbar">
-        <form class="form">
-          <button type="submit" class="button">
-            <span class="button-label">Search</span>
-          </button>
+export default function Searchbar({ onSelectCategory }) {
+  const onSubmit = event => {
+    event.preventDefault();
+    onSelectCategory(event.target.elements.search.value);
+  };
+  return (
+    <StyledHeader>
+      <StyledForm onSubmit={onSubmit}>
+        <StyledSearchBtn type="submit">
+          <FaSearch className="FaSearch" />
+          <span className="SearchForm-button-label"></span>
+        </StyledSearchBtn>
 
-          <input
-            class="input"
-            type="text"
-            autocomplete="off"
-            autofocus
-            placeholder="Search images and photos"
-          />
-        </form>
-      </header>
-    );
-  }
+        <StyledInput
+          name="search"
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+        />
+      </StyledForm>
+    </StyledHeader>
+  );
 }
+
+Searchbar.propTypes = {
+  onSelectCategory: PropTypes.func.isRequired,
+};
