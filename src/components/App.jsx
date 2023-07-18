@@ -23,7 +23,7 @@ export default class App extends Component {
       prevState.searchTerm !== this.state.searchTerm ||
       prevState.page !== this.state.page
     ) {
-      this.fetchGallery(this.state.searchTerm);
+      this.fetchGallery();
     }
     if (prevState.galleryList.length !== this.state.galleryList.length) {
       this.scrollToBottom();
@@ -49,13 +49,13 @@ export default class App extends Component {
         this.state.searchTerm,
         this.state.page
       );
-      this.setState({
+      this.setState(prevState => ({
         galleryList:
           this.state.page === 1
             ? galleryList.hits
-            : [...this.state.galleryList, ...galleryList.hits],
+            : [...prevState.galleryList, ...galleryList.hits],
         totalHits: galleryList.totalHits,
-      });
+      }));
     } catch (error) {
       this.setState({ error: error.message });
     } finally {
