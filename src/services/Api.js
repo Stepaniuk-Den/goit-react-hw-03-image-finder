@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { POSTS_PER_PAGE } from 'constants/constans';
 
 const KEY = '38296038-6bca705c520bca5e85b496146';
 
@@ -9,7 +10,7 @@ const instance = axios.create({
     key: KEY,
     image_type: 'photo',
     orientation: 'horizontal',
-    per_page: 12,
+    per_page: POSTS_PER_PAGE,
   },
 });
 

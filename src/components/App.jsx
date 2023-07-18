@@ -5,6 +5,7 @@ import Button from './Button/Button';
 import Searchbar from './Searchbar/Searchbar';
 import Modal from './Modal/Modal';
 import Loader from './Loader/Loader';
+import { POSTS_PER_PAGE } from 'constants/constans';
 
 export default class App extends Component {
   state = {
@@ -12,7 +13,7 @@ export default class App extends Component {
     isLoading: false,
     error: null,
     searchTerm: '',
-    page: null,
+    page: 0,
     totalHits: null,
     modal: { isOpen: false, modalData: null },
   };
@@ -24,15 +25,16 @@ export default class App extends Component {
     ) {
       this.fetchGallery(this.state.searchTerm);
     }
+    if (prevState.galleryList.length !== this.state.galleryList.length) {
+      this.scrollToBottom();
+    }
   }
-
   onSelectCategory = category => {
     this.setState({ searchTerm: category, page: 1 });
   };
 
   onLoadMore = () => {
     this.setState(prevState => ({ page: prevState.page + 1 }));
-    this.scrollToBottom();
   };
   onOpenModal = data =>
     this.setState({ modal: { isOpen: true, modalData: data } });
@@ -62,7 +64,8 @@ export default class App extends Component {
   };
   checkLoadMore() {
     const LoadMoreHidden = Boolean(
-      this.state.totalHits / 12 < this.state.page && this.state.totalHits
+      this.state.totalHits / POSTS_PER_PAGE < this.state.page &&
+        this.state.totalHits
     );
 
     return LoadMoreHidden;
@@ -78,7 +81,11 @@ export default class App extends Component {
   render() {
     const showLoader = this.state.isLoading;
     const showError = this.state.error;
-    const showButton = this.checkLoadMore();
+    const showButton =
+      !this.checkLoadMore() &&
+      this.state.page >= 1 &&
+      !showLoader &&
+      !showError;
     return (
       <div className="App">
         <Searchbar onSelectCategory={this.onSelectCategory} />
@@ -87,17 +94,14 @@ export default class App extends Component {
             <p>Opps, some error occured... Error: {this.state.error}</p>
           </div>
         )}
-        {showLoader ? (
-          <Loader />
-        ) : (
+        {this.state.galleryList?.length > 0 && (
           <ImageGallery
             galleryList={this.state.galleryList}
             onOpenModal={this.onOpenModal}
           />
         )}
-        {this.state.page > 0 && !showLoader && !showButton && !showError && (
-          <Button onLoadMore={this.onLoadMore} />
-        )}
+        {showLoader && <Loader />}{' '}
+        {showButton && <Button onLoadMore={this.onLoadMore} />}
         {this.state.modal.isOpen && (
           <Modal
             onCloseModal={this.onCloseModal}
